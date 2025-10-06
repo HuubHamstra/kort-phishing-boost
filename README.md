@@ -60,6 +60,68 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Supabase (Training Resultaten Opslag)
+
+De app kan trainingsresultaten opslaan in Supabase. Maak eerst een project op https://supabase.com en voeg de volgende environment variabelen toe aan je Vite omgeving (bijv. `.env.local`):
+
+```
+VITE_SUPABASE_URL=https://<YOUR_PROJECT>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<YOUR_ANON_KEY>
+```
+
+### Database tabel aanmaken
+
+Voer onder SQL in Supabase het volgende script uit om de `training_results` tabel te maken:
+
+```sql
+create table if not exists public.training_results (
+	id uuid primary key default gen_random_uuid(),
+	created_at timestamptz default now(),
+	session_id uuid null,
+	score int not null,
+	total_questions int not null,
+	percentage int not null,
+	answers jsonb null
+);
+
+-- (optioneel) Row Level Security en policies
+alter table public.training_results enable row level security;
+
+-- Sta alleen inserts toe (publiek) als je geen auth gebruikt
+create policy "allow insert training results" on public.training_results
+	for insert
+	to anon
+	with check (true);
+
+-- Sta select toe indien je later dashboards wilt bouwen (optioneel)
+create policy "allow read training results" on public.training_results
+	for select
+	to anon
+	using (true);
+```
+
+Let op: Voor productie wil je waarschijnlijk authenticated users koppelen en de policies strenger maken.
+
+### Types regenereren (optioneel)
+
+De `src/integrations/supabase/types.ts` is nu handmatig uitgebreid. Je kunt deze automatisch genereren met de Supabase CLI:
+
+```bash
+npm install -g supabase
+supabase login
+supabase link --project-ref <YOUR_PROJECT_REF>
+supabase gen types typescript --schema public > src/integrations/supabase/types.ts
+```
+
+## Training Resultaat Opslag Flow
+
+Wanneer een gebruiker de phishing training afrondt:
+
+1. Per vraag wordt het antwoord opgeslagen in state.
+2. Bij het tonen van het resultaten scherm wordt éénmalig een insert gedaan naar `training_results`.
+3. Bij succes verschijnt een toast melding.
+4. Bij fout kan de gebruiker opnieuw proberen door de training opnieuw te starten.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/92b6d15d-14a0-49b8-90b9-b1edc03b6b52) and click on Share -> Publish.

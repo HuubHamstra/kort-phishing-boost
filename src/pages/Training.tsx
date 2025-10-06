@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Shield, CheckCircle, XCircle, ArrowRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { saveTrainingResult } from "@/integrations/supabase/saveTrainingResult";
 
 interface Question {
   id: number;
@@ -21,62 +22,72 @@ const questions: Question[] = [
     id: 1,
     subject: "Urgent: Verifieer uw bankgegevens binnen 24 uur",
     from: "service@rabobank-verify.net",
-    content: "Geachte klant,\n\nWe hebben verdachte activiteit op uw rekening gedetecteerd. Om uw account te beschermen, moet u binnen 24 uur uw gegevens verifiëren.\n\nKlik hier om in te loggen: http://rabobank-verify.net/login\n\nAls u dit niet doet, wordt uw rekening geblokkeerd.\n\nMet vriendelijke groet,\nRabobank Security Team",
+    content:
+      "Geachte klant,\n\nWe hebben verdachte activiteit op uw rekening gedetecteerd. Om uw account te beschermen, moet u binnen 24 uur uw gegevens verifiëren.\n\nKlik hier om in te loggen: http://rabobank-verify.net/login\n\nAls u dit niet doet, wordt uw rekening geblokkeerd.\n\nMet vriendelijke groet,\nRabobank Security Team",
     isPhishing: true,
-    explanation: "Dit is phishing! Echte banken vragen nooit via e-mail om in te loggen of persoonlijke gegevens te verstrekken.",
+    explanation:
+      "Dit is phishing! Echte banken vragen nooit via e-mail om in te loggen of persoonlijke gegevens te verstrekken.",
     warningSignals: [
       "Dringende taal en tijdsdruk (24 uur)",
       "Verdacht e-mailadres (rabobank-verify.net in plaats van rabobank.nl)",
       "Link naar externe website",
-      "Dreiging met blokkering"
-    ]
+      "Dreiging met blokkering",
+    ],
   },
   {
     id: 2,
     subject: "Maandelijkse nieuwsbrief - April 2024",
     from: "newsletter@bedrijf.nl",
-    content: "Beste collega's,\n\nHierbij ontvang je onze maandelijkse nieuwsbrief met updates over:\n\n• Nieuwe projecten\n• Teamuitjes volgende maand\n• IT-updates en trainingen\n\nMeer informatie vind je op ons intranet.\n\nGroet,\nCommunicatieteam",
+    content:
+      "Beste collega's,\n\nHierbij ontvang je onze maandelijkse nieuwsbrief met updates over:\n\n• Nieuwe projecten\n• Teamuitjes volgende maand\n• IT-updates en trainingen\n\nMeer informatie vind je op ons intranet.\n\nGroet,\nCommunicatieteam",
     isPhishing: false,
-    explanation: "Dit is een legitieme e-mail. Het is een interne nieuwsbrief zonder verdachte links of verzoeken om persoonlijke informatie.",
-    warningSignals: []
+    explanation:
+      "Dit is een legitieme e-mail. Het is een interne nieuwsbrief zonder verdachte links of verzoeken om persoonlijke informatie.",
+    warningSignals: [],
   },
   {
     id: 3,
     subject: "Re: Factuur #2024-1893 - Betaling Vereist",
     from: "finance@supplier-payment.com",
-    content: "Geachte heer/mevrouw,\n\nOnze administratie heeft geconstateerd dat factuur #2024-1893 nog niet is voldaan.\n\nBedrag: €4.850,00\nVervaldatum: 15 maart 2024\n\nZie bijgevoegde factuur voor details. Gelieve het bedrag binnen 3 dagen over te maken naar:\n\nIBAN: NL89 INGB 0123 4567 89\nT.n.v.: Payment Processing Services\n\nBij vragen, bel ons op +31 6 1234 5678",
+    content:
+      "Geachte heer/mevrouw,\n\nOnze administratie heeft geconstateerd dat factuur #2024-1893 nog niet is voldaan.\n\nBedrag: €4.850,00\nVervaldatum: 15 maart 2024\n\nZie bijgevoegde factuur voor details. Gelieve het bedrag binnen 3 dagen over te maken naar:\n\nIBAN: NL89 INGB 0123 4567 89\nT.n.v.: Payment Processing Services\n\nBij vragen, bel ons op +31 6 1234 5678",
     isPhishing: true,
-    explanation: "Dit is phishing! De afzender is onbekend, er is druk om snel te betalen, en het IBAN-nummer lijkt niet legitiem.",
+    explanation:
+      "Dit is phishing! De afzender is onbekend, er is druk om snel te betalen, en het IBAN-nummer lijkt niet legitiem.",
     warningSignals: [
       "Onbekende afzender (supplier-payment.com)",
       "Onverwachte factuur zonder eerdere correspondentie",
       "Druk om snel te betalen (3 dagen)",
-      "Verdacht rekeningnummer naar 'Payment Processing Services'"
-    ]
+      "Verdacht rekeningnummer naar 'Payment Processing Services'",
+    ],
   },
   {
     id: 4,
     subject: "Uitnodiging: Teamvergadering Q2 Planning",
     from: "jan.smit@bedrijf.nl",
-    content: "Hoi allemaal,\n\nHierbij de uitnodiging voor onze kwartaal planning meeting:\n\nDatum: Dinsdag 16 april\nTijd: 10:00 - 12:00\nLocatie: Vergaderzaal 3B\n\nAgenda:\n1. Resultaten Q1\n2. Doelstellingen Q2\n3. Resourceplanning\n\nGraag voor vrijdag bevestigen.\n\nGroet,\nJan",
+    content:
+      "Hoi allemaal,\n\nHierbij de uitnodiging voor onze kwartaal planning meeting:\n\nDatum: Dinsdag 16 april\nTijd: 10:00 - 12:00\nLocatie: Vergaderzaal 3B\n\nAgenda:\n1. Resultaten Q1\n2. Doelstellingen Q2\n3. Resourceplanning\n\nGraag voor vrijdag bevestigen.\n\nGroet,\nJan",
     isPhishing: false,
-    explanation: "Dit is een legitieme e-mail van een collega met een normale meeting uitnodiging. Geen verdachte elementen.",
-    warningSignals: []
+    explanation:
+      "Dit is een legitieme e-mail van een collega met een normale meeting uitnodiging. Geen verdachte elementen.",
+    warningSignals: [],
   },
   {
     id: 5,
-    subject: "Je pakket kon niet worden bezorgd",
-    from: "noreply@postnl-delivery.info",
-    content: "Beste klant,\n\nWe hebben geprobeerd je pakket te bezorgen, maar je was niet thuis.\n\nTrack & Trace: 3SABCD1234567890\n\nKlik hier om een nieuwe bezorgafspraak in te plannen en €2,95 verzendkosten te betalen:\n→ postnl-delivery.info/redelivery?id=3SABCD1234567890\n\nJe pakket wordt anders geretourneerd naar de afzender.\n\nPostNL Service",
+    subject: "Onderwerp: Belangrijk: verplichte training digitale veiligheid",
+    from: "herman.wehkamp@mantter.com",
+    content:
+      "Hallo $medewerker,\n\nOm onze digitale veiligheid scherp te houden starten we deze week met een verplichte phishingtraining.\n\nHet duurt maar zo’n 5 minuten en laat je zien hoe je verdachte mails snel kunt herkennen en melden.\n\nHieronder volgt een knop om te starten:\n\n[Start training — interne leerportal]\n\nGroeten,\n\nHerman Wehkamp",
     isPhishing: true,
-    explanation: "Dit is phishing! PostNL vraagt nooit om betalingen voor herbezorging via e-mail links. Het domein is ook verdacht.",
+    explanation:
+      "Dit is phishing! Hoewel de mail lijkt te komen van een interne bron, is het doel om bewustwording te testen. Controleer altijd afzender en link voordat je klikt.",
     warningSignals: [
-      "Onverwacht pakket (je hebt niets besteld?)",
-      "Verzoek om betaling via link",
-      "Verdacht domein (postnl-delivery.info i.p.v. postnl.nl)",
-      "Dreiging met retourneren"
-    ]
-  }
+      "Onverwachte mail over een training zonder aankondiging via officiële kanalen",
+      "Druk om direct te handelen ('verplichte training, start nu')",
+      "Link in de mail — kan leiden naar een valse inlogpagina",
+      "Algemene aanhef ($medewerker i.p.v. je naam)",
+    ],
+  },
 ];
 
 const Training = () => {
@@ -85,8 +96,19 @@ const Training = () => {
   const [answered, setAnswered] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [answers, setAnswers] = useState<
+    {
+      question_id: number;
+      user_answer: boolean;
+      correct_answer: boolean;
+      is_phishing_correct: boolean;
+    }[]
+  >([]);
+  const sessionIdRef = useRef<string>(crypto.randomUUID());
+  const savedRef = useRef(false);
 
-  const progress = ((currentQuestion + (answered ? 1 : 0)) / questions.length) * 100;
+  const progress =
+    ((currentQuestion + (answered ? 1 : 0)) / questions.length) * 100;
   const question = questions[currentQuestion];
 
   const handleAnswer = (isPhishingAnswer: boolean) => {
@@ -100,6 +122,15 @@ const Training = () => {
     } else {
       toast.error("Helaas, niet correct");
     }
+    setAnswers((prev) => [
+      ...prev,
+      {
+        question_id: question.id,
+        user_answer: isPhishingAnswer,
+        correct_answer: question.isPhishing,
+        is_phishing_correct: isCorrect,
+      },
+    ]);
   };
 
   const handleNext = () => {
@@ -120,6 +151,28 @@ const Training = () => {
     return "Je kunt nog veel leren. Doe de training opnieuw! 💪";
   };
 
+  useEffect(() => {
+    if (showResults && !savedRef.current) {
+      savedRef.current = true; // guard tegen dubbel opslaan
+      const percentage = (score / questions.length) * 100;
+      saveTrainingResult({
+        session_id: sessionIdRef.current,
+        score,
+        total_questions: questions.length,
+        answers: answers as any, // typed as Json in table
+        percentage,
+      })
+        .then(() => {
+          toast.success("Resultaat opgeslagen ✅");
+        })
+        .catch((err) => {
+          savedRef.current = false; // laat retry toe bij volgende render / refresh
+          console.error("Fout bij opslaan training resultaat", err);
+          toast.error("Opslaan resultaat mislukt");
+        });
+    }
+  }, [showResults, score, answers]);
+
   if (showResults) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -136,12 +189,14 @@ const Training = () => {
             )}
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Training Voltooid!</h1>
-          
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            Training Voltooid!
+          </h1>
+
           <div className="text-6xl font-bold text-primary mb-4">
             {score}/{questions.length}
           </div>
-          
+
           <p className="text-xl text-muted-foreground mb-8">
             {getScoreMessage()}
           </p>
@@ -175,8 +230,8 @@ const Training = () => {
                 Terug naar Home
               </Button>
             </Link>
-            <Button 
-              variant="hero" 
+            <Button
+              variant="hero"
               size="lg"
               onClick={() => {
                 setCurrentQuestion(0);
@@ -184,6 +239,9 @@ const Training = () => {
                 setAnswered(false);
                 setSelectedAnswer(null);
                 setShowResults(false);
+                setAnswers([]);
+                savedRef.current = false;
+                sessionIdRef.current = crypto.randomUUID();
               }}
             >
               Doe Training Opnieuw
@@ -205,7 +263,7 @@ const Training = () => {
               Terug
             </Button>
           </Link>
-          
+
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold">Phishing Training</h1>
@@ -218,7 +276,7 @@ const Training = () => {
               <div className="text-sm text-muted-foreground">Score</div>
             </div>
           </div>
-          
+
           <Progress value={progress} className="h-2" />
         </div>
 
@@ -226,11 +284,13 @@ const Training = () => {
         <Card className="p-6 md:p-8 mb-6">
           <div className="mb-6">
             <div className="text-sm text-muted-foreground mb-2">Van:</div>
-            <div className="font-mono text-sm bg-muted p-3 rounded mb-4">{question.from}</div>
-            
+            <div className="font-mono text-sm bg-muted p-3 rounded mb-4">
+              {question.from}
+            </div>
+
             <div className="text-sm text-muted-foreground mb-2">Onderwerp:</div>
             <div className="font-semibold text-lg mb-4">{question.subject}</div>
-            
+
             <div className="text-sm text-muted-foreground mb-2">Bericht:</div>
             <div className="bg-muted/50 p-4 rounded whitespace-pre-line text-sm border border-border">
               {question.content}
@@ -239,7 +299,9 @@ const Training = () => {
 
           {!answered ? (
             <div className="space-y-4">
-              <p className="text-center font-medium mb-4">Is dit een phishing e-mail?</p>
+              <p className="text-center font-medium mb-4">
+                Is dit een phishing e-mail?
+              </p>
               <div className="grid md:grid-cols-2 gap-4">
                 <Button
                   variant="outline"
@@ -250,10 +312,12 @@ const Training = () => {
                   <div className="flex flex-col items-center gap-2">
                     <XCircle className="w-8 h-8 text-destructive" />
                     <span className="font-semibold">Ja, dit is Phishing</span>
-                    <span className="text-xs text-muted-foreground">Deze e-mail is verdacht</span>
+                    <span className="text-xs text-muted-foreground">
+                      Deze e-mail is verdacht
+                    </span>
                   </div>
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="lg"
@@ -263,18 +327,22 @@ const Training = () => {
                   <div className="flex flex-col items-center gap-2">
                     <CheckCircle className="w-8 h-8 text-primary" />
                     <span className="font-semibold">Nee, dit is Legitiem</span>
-                    <span className="text-xs text-muted-foreground">Deze e-mail is veilig</span>
+                    <span className="text-xs text-muted-foreground">
+                      Deze e-mail is veilig
+                    </span>
                   </div>
                 </Button>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className={`p-4 rounded-lg border-2 ${
-                selectedAnswer === question.isPhishing 
-                  ? 'bg-primary/5 border-primary' 
-                  : 'bg-destructive/5 border-destructive'
-              }`}>
+              <div
+                className={`p-4 rounded-lg border-2 ${
+                  selectedAnswer === question.isPhishing
+                    ? "bg-primary/5 border-primary"
+                    : "bg-destructive/5 border-destructive"
+                }`}
+              >
                 <div className="flex items-center gap-2 mb-2">
                   {selectedAnswer === question.isPhishing ? (
                     <CheckCircle className="w-5 h-5 text-primary" />
@@ -282,32 +350,35 @@ const Training = () => {
                     <XCircle className="w-5 h-5 text-destructive" />
                   )}
                   <span className="font-semibold">
-                    {selectedAnswer === question.isPhishing ? 'Correct!' : 'Helaas, niet correct'}
+                    {selectedAnswer === question.isPhishing
+                      ? "Correct!"
+                      : "Helaas, niet correct"}
                   </span>
                 </div>
                 <p className="text-sm">{question.explanation}</p>
               </div>
 
-              {question.warningSignals && question.warningSignals.length > 0 && (
-                <div className="bg-muted/30 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    Waarschuwingssignalen:
-                  </h4>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    {question.warningSignals.map((signal, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-destructive mt-0.5">•</span>
-                        <span>{signal}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              {question.warningSignals &&
+                question.warningSignals.length > 0 && (
+                  <div className="bg-muted/30 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2 flex items-center gap-2">
+                      <Shield className="w-4 h-4" />
+                      Waarschuwingssignalen:
+                    </h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      {question.warningSignals.map((signal, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-destructive mt-0.5">•</span>
+                          <span>{signal}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              <Button 
-                variant="hero" 
-                size="lg" 
+              <Button
+                variant="hero"
+                size="lg"
                 onClick={handleNext}
                 className="w-full"
               >
@@ -317,7 +388,7 @@ const Training = () => {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </>
                 ) : (
-                  'Bekijk Resultaten'
+                  "Bekijk Resultaten"
                 )}
               </Button>
             </div>
@@ -328,7 +399,9 @@ const Training = () => {
         {!answered && (
           <Card className="p-4 bg-muted/30">
             <p className="text-sm text-muted-foreground text-center">
-              💡 <strong>Tip:</strong> Let op het e-mailadres van de afzender, de toon van het bericht, en of er om persoonlijke informatie wordt gevraagd.
+              💡 <strong>Tip:</strong> Let op het e-mailadres van de afzender,
+              de toon van het bericht, en of er om persoonlijke informatie wordt
+              gevraagd.
             </p>
           </Card>
         )}
