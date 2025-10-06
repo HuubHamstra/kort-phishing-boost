@@ -1,6 +1,7 @@
 import { Shield, AlertTriangle, CheckCircle, Clock, Users, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-security.jpg";
 
 const Index = () => {
@@ -35,12 +36,16 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="lg" className="text-lg px-8">
-                Start Training Nu
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8">
-                Meer Informatie
-              </Button>
+              <Link to="/training">
+                <Button variant="hero" size="lg" className="text-lg px-8">
+                  Start Training Nu
+                </Button>
+              </Link>
+              <a href="#wat-is-phishing">
+                <Button variant="outline" size="lg" className="text-lg px-8">
+                  Meer Informatie
+                </Button>
+              </a>
             </div>
             
             <div className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
@@ -105,7 +110,7 @@ const Index = () => {
       </section>
 
       {/* What is Phishing Section */}
-      <section className="py-20">
+      <section id="wat-is-phishing" className="py-20 scroll-mt-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">
@@ -246,9 +251,11 @@ const Index = () => {
             <p className="text-xl text-muted-foreground mb-8">
               Investeer 5 minuten in je digitale veiligheid en bescherm jezelf én je organisatie tegen phishing-aanvallen.
             </p>
-            <Button variant="hero" size="lg" className="text-lg px-12">
-              Start de Training
-            </Button>
+            <Link to="/training">
+              <Button variant="hero" size="lg" className="text-lg px-12">
+                Start de Training
+              </Button>
+            </Link>
             <p className="text-sm text-muted-foreground mt-6">
               Gratis • 5 minuten • Direct toegang
             </p>
