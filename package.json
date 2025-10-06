@@ -1,6 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
+  "homepage": "https://HuubHamstra.github.io/kort-phishing-boost",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
