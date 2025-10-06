@@ -20,7 +20,7 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    subject: "Urgent: Verifieer uw bankgegevens binnen 24 uur",
+    subject: "Urgent: Verifieer uw bankgegevens binnen 24 uur!",
     from: "service@rabobank-verify.net",
     content:
       "Geachte klant,\n\nWe hebben verdachte activiteit op uw rekening gedetecteerd. Om uw account te beschermen, moet u binnen 24 uur uw gegevens verifiëren.\n\nKlik hier om in te loggen: http://rabobank-verify.net/login\n\nAls u dit niet doet, wordt uw rekening geblokkeerd.\n\nMet vriendelijke groet,\nRabobank Security Team",
