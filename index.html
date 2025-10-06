@@ -1,24 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phishing Training - Leer Phishing Herkennen in 5 Minuten</title>
-    <meta name="description" content="Bescherm jezelf en je organisatie tegen phishing-aanvallen. Praktische training van 5 minuten met directe resultaten." />
+    <meta
+      name="description"
+      content="Bescherm jezelf en je organisatie tegen phishing-aanvallen. Praktische training van 5 minuten met directe resultaten."
+    />
     <meta name="author" content="Phishing Training" />
 
-    <meta property="og:title" content="Phishing Training - Leer Phishing Herkennen in 5 Minuten" />
-    <meta property="og:description" content="Bescherm jezelf en je organisatie tegen phishing-aanvallen. Praktische training van 5 minuten met directe resultaten." />
+    <meta
+      property="og:title"
+      content="Phishing Training - Leer Phishing Herkennen in 5 Minuten"
+    />
+    <meta
+      property="og:description"
+      content="Bescherm jezelf en je organisatie tegen phishing-aanvallen. Praktische training van 5 minuten met directe resultaten."
+    />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta
+      property="og:image"
+      content="https://lovable.dev/opengraph-image-p98pqg.png"
+    />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta
+      name="twitter:image"
+      content="https://lovable.dev/opengraph-image-p98pqg.png"
+    />
+    <!-- Explicit favicon to avoid 404 on some browsers / crawlers -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- NOTE: For GitHub Pages project sites without a custom domain you must serve under /<repo>/.
+      The Vite config already handles this via the base option (see vite.config.ts).
+      With CUSTOM_DOMAIN set the base is '/'. -->
   </head>
 
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Gebruik een relatief pad zodat Vite dit tijdens build herschrijft naar /<base>/assets/*.js -->
+    <script type="module" src="src/main.tsx"></script>
   </body>
 </html>

@@ -47,7 +47,9 @@ jobs:
           # If you have environment vars (e.g. Supabase) add them as repository secrets and map here
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          CUSTOM_DOMAIN: phishing-campaign.nl
+          # Leave CUSTOM_DOMAIN unset until DNS + GitHub Pages custom domain is fully active.
+          # Set a repository variable CUSTOM_DOMAIN or uncomment below when working to switch base to '/'.
+          # CUSTOM_DOMAIN: phishing-campaign.nl
 
       - name: SPA 404 fallback
         run: cp dist/index.html dist/404.html
