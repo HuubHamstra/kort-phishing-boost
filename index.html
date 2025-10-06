@@ -39,7 +39,7 @@
 
   <body>
     <div id="root"></div>
-    <!-- Gebruik een relatief pad zodat Vite dit tijdens build herschrijft naar /<base>/assets/*.js -->
-    <script type="module" src="src/main.tsx"></script>
+    <!-- Entry point: laat het pad met een leading slash zodat Vite het kan herschrijven met de correcte base (/ of /repo/). -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
