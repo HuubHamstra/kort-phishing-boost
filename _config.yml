@@ -1,0 +1,8 @@
+# Configuration for GitHub Pages
+
+# Theme settings
+# Uncomment and set the theme you want to use
+theme: jekyll-theme-minimal
+
+# Alternatively, use a remote theme
+# remote_theme: THEME-NAME
