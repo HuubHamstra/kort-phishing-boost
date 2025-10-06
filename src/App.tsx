@@ -14,7 +14,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        basename={import.meta.env.PROD ? "/kort-phishing-boost" : ""}
+      >
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/training" element={<Training />} />
