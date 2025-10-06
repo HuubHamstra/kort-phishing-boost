@@ -169,6 +169,20 @@ phishing-training.example.com
 
 De workflow zal het bestand meenemen in `dist/`. Configureer vervolgens een CNAME record bij je DNS provider dat naar `<username>.github.io` verwijst.
 
+Gebruik je een custom domein (zoals `phishing-campaign.nl`) dan zet de build (via env `CUSTOM_DOMAIN`) de Vite `base` terug naar `/` zodat assets correct resolven vanaf de root i.p.v. `/<repo>/`.
+
+DNS records voorbeeld (GitHub Pages):
+
+| Type  | Naam | Waarde               |
+| ----- | ---- | -------------------- |
+| A     | @    | 185.199.108.153      |
+| A     | @    | 185.199.109.153      |
+| A     | @    | 185.199.110.153      |
+| A     | @    | 185.199.111.153      |
+| CNAME | www  | <username>.github.io |
+
+Na configuratie: wacht (TTL) en verifieer in Settings → Pages → Custom domain. Voeg daarna (optioneel) HSTS / enforce HTTPS.
+
 #### Cache busting
 
 Vite genereert gehashte bestandsnamen, dus standaard werkt cache busting prima. Zorg dat je geen bestanden direct zonder hash referenced buiten `index.html`.

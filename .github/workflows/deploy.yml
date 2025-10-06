@@ -26,8 +26,17 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-cache-${{ runner.os }}-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            bun-cache-${{ runner.os }}-
+
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
+        # Als je later stricter wil zijn vervang door: bun install --frozen-lockfile (en commit actuele bun.lockb)
 
       - name: Set REPO_NAME env
         run: echo "REPO_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
@@ -38,6 +47,10 @@ jobs:
           # If you have environment vars (e.g. Supabase) add them as repository secrets and map here
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          CUSTOM_DOMAIN: phishing-campaign.nl
+
+      - name: SPA 404 fallback
+        run: cp dist/index.html dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
