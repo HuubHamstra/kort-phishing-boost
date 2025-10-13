@@ -10,8 +10,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-security.jpg";
+import { useEffect, useRef } from "react";
+import { saveVisitLog } from "@/integrations/supabase/saveVisitLog";
 
 const Index = () => {
+  // guard tegen dubbele mount in React StrictMode (dev)
+  const ranRef = useRef(false);
+  useEffect(() => {
+    if (ranRef.current) return;
+    ranRef.current = true;
+    void saveVisitLog();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}

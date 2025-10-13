@@ -44,6 +44,37 @@ export type Database = {
         };
         Relationships: [];
       };
+
+      visit_logs: {
+        Row: {
+          id: string;
+          created_at: string | null;
+          ip: string | null;
+          ref: string | null;
+          uid: string | null;
+          user_agent: string | null;
+          path: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string | null;
+          ip?: string | null;
+          ref?: string | null;
+          uid?: string | null;
+          user_agent?: string | null;
+          path?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string | null;
+          ip?: string | null;
+          ref?: string | null;
+          uid?: string | null;
+          user_agent?: string | null;
+          path?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
